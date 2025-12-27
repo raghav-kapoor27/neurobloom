@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Support | Neurobloom{% endblock %}
+
+{% block content %}
+<style>
+    .support-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+
+    .btn-back-dashboard {
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-back-dashboard:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+    }
+
+    .btn-back-dashboard:active {
+        transform: translateY(0);
+    }
+
+    .support-title-section {
+        flex-grow: 1;
+    }
+
+    .support-title-section h2 {
+        margin: 0;
+        color: #1a1a2e;
+    }
+
+    .support-title-section p {
+        margin: 5px 0 0 0;
+        color: #666;
+        font-size: 14px;
+    }
+</style>
+
+<div class="support-header">
+    <button class="btn-back-dashboard" onclick="goToDashboard()">
+        ← Back to Dashboard
+    </button>
+    <div class="support-title-section">
+        <h2>Support Center</h2>
+        <p>Get help and answers to your questions</p>
+    </div>
+</div>
+
+<div class="support-content">
+    <!-- Support content will go here -->
+</div>
+
+<script>
+    function goToDashboard() {
+        const userRole = '{{ session.get("role") }}';
+        if (userRole === 'student') {
+            window.location.href = '/student-dashboard';
+        } else if (userRole === 'faculty') {
+            window.location.href = '/faculty-dashboard';
+        } else {
+            window.location.href = '/';
+        }
+    }
+</script>
+{% endblock %}

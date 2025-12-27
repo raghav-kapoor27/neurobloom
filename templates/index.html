@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Home | Neurobloom{% endblock %}
+
+{% block content %}
+
+<main class="home-wrapper">
+  <section class="welcome-section">
+    <h1>Welcome to <span class="highlight">Neurobloom</span></h1>
+    <p class="tagline">
+      Empowering students with learning disabilities to grow, learn, and thrive with confidence.
+    </p>
+ 
+    <div class="button-group">
+      <a href="/signup" class="btn-register">
+        Register Now <span class="arrow">→</span>
+      </a>
+      <p class="login-text">
+        Already have an account? <a href="/login" class="login-link">Login</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="image-section">
+   <img src="{{ url_for('static', filename='imgs/img1.gif') }}" alt="Illustration of children learning with support">
+
+  </section>
+</main>
+{% endblock %}

@@ -1,0 +1,457 @@
+{% extends "base.html" %}
+
+{% block title %}Faculty Dashboard | Neurobloom{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='faculty.css') }}">
+
+<div class="faculty-container">
+    <!-- Main Content -->
+    <main class="faculty-main">
+        <!-- Dashboard Section -->
+        <section id="dashboardSection" class="section active">
+            <div class="section-title">
+                <h2>Dashboard</h2>
+                <p class="subtitle">Welcome back! Here's your teaching overview</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-content">
+                        <h3 id="totalStudents">0</h3>
+                        <p>Total Students</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📋</div>
+                    <div class="stat-content">
+                        <h3 id="totalAssessments">0</h3>
+                        <p>Assessments </p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-content">
+                        <h3 id="completedAssessments">0</h3>
+                        <p>Completed</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <h3 id="averageScore">0%</h3>
+                        <p>Class Average</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Faculty Information -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>👨‍🏫 Faculty Information</h3>
+                </div>
+                <div class="card-body">
+                    <div class="faculty-info-grid">
+                        <div class="info-item">
+                            <label>Full Name</label>
+                            <p id="facultyName">-</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Email Address</label>
+                            <p id="facultyEmail">-</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Department</label>
+                            <p id="facultyDepartment">-</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Total Students Assigned</label>
+                            <p id="facultyStudentCount">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profileSection" class="section">
+            <div class="section-title">
+                <h2>My Profile</h2>
+                <button class="btn-edit" id="toggleEditMode">✎ Edit Profile</button>
+            </div>
+
+            <!-- View Mode -->
+            <div id="profileViewMode" class="profile-content">
+                <div class="profile-photo-wrapper">
+                    <div class="profile-photo-container">
+                        <img id="profilePhotoImg" src="{{ session.get('profile_photo') or url_for('static', filename='imgs/default-avatar.png') }}" alt="Profile Photo" class="profile-photo-large">
+                        <div class="photo-overlay">
+                            <button id="changePhotoBtn" class="btn-change-photo">📸 Change</button>
+                        </div>
+                    </div>
+                    <input type="file" id="photoInput" accept="image/*" style="display:none;">
+                </div>
+
+                <div class="info-section">
+                    <div class="section-header">
+                        <h3>👤 Personal Information</h3>
+                    </div>
+                    <div class="info-grid-2">
+                        <div class="info-item">
+                            <label>Full Name</label>
+                            <p id="displayName">-</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Email Address</label>
+                            <p id="displayEmail">-</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Contact Number</label>
+                            <p id="displayContact">-</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Role</label>
+                            <p>Faculty/Mentor</p>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="info-section security-section">
+                    <div class="section-header">
+                        <h3>🔐 Security</h3>
+                    </div>
+                    <button class="btn-change-password" id="changePasswordBtn">Change Password</button>
+                </div>
+            </div>
+
+            <!-- Edit Mode -->
+            <div id="profileEditMode" class="profile-content" style="display:none;">
+                <form id="profileEditForm" class="edit-form">
+                    <div class="form-section">
+                        <h3>Personal Information</h3>
+                        <div class="form-group">
+                            <label for="editName">Full Name *</label>
+                            <input type="text" id="editName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editEmail">Email Address *</label>
+                            <input type="email" id="editEmail" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editContact">Contact Number</label>
+                            <input type="tel" id="editContact" name="contact">
+                        </div>
+                    </div>
+
+
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save">Save Changes</button>
+                        <button type="button" class="btn-cancel" id="cancelEditBtn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Change Password Mode -->
+            <div id="changePasswordMode" class="profile-content" style="display:none;">
+                <form id="changePasswordForm" class="edit-form">
+                    <h3>Change Your Password</h3>
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password *</label>
+                        <input type="password" id="currentPassword" name="current_password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password *</label>
+                        <input type="password" id="newPassword" name="new_password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password *</label>
+                        <input type="password" id="confirmPassword" name="confirm_password" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save">Update Password</button>
+                        <button type="button" class="btn-cancel" id="cancelPasswordBtn">Back</button>
+                    </div>
+                </form>
+                <div id="passwordMessage" class="message" style="display:none;"></div>
+            </div>
+        </section>
+
+        <!-- Students Section -->
+        <section id="studentsSection" class="section">
+            <div class="section-title">
+                <h2>Students & Results</h2>
+                <button id="downloadAllReportsBtn" class="btn-primary">📥 Download All Reports</button>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Email</th>
+                            <th>Assessments</th>
+                            <th>Avg Score</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsList">
+                        <tr>
+                            <td colspan="5" class="placeholder">No students found</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Assessments Section -->
+        <section id="assessmentsSection" class="section">
+            <div class="section-title">
+                <h2>Assessments</h2>
+            </div>
+            <div id="assessmentsList" class="assessments-grid">
+                <p class="placeholder">No assessments created yet</p>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadFacultyProfile();
+    setupSectionNavigation();
+    setupProfileEditing();
+    setupPasswordChange();
+    setupProfileButton();
+});
+
+function setupProfileButton() {
+    const profileBtn = document.querySelector('.btn-profile-link');
+    if (profileBtn) {
+        profileBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Scroll to profile section
+            const profileSection = document.getElementById('profileSection');
+            if (profileSection) {
+                profileSection.scrollIntoView({ behavior: 'smooth' });
+                // Activate profile tab
+                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                document.querySelector('[data-section="profile"]').classList.add('active');
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                profileSection.classList.add('active');
+            }
+        });
+    }
+}
+
+async function loadFacultyProfile() {
+    try {
+        const response = await fetch('/api/faculty-info');
+        if (response.status === 401) {
+            window.location.href = '/login';
+            return;
+        }
+        
+        if (!response.ok) throw new Error('Failed to load profile');
+        
+        const data = await response.json();
+        const profile = data.profile || {};
+        const stats = data.statistics || {};
+        
+        document.getElementById('displayName').textContent = profile.name || '-';
+        document.getElementById('displayEmail').textContent = profile.email || '-';
+        document.getElementById('displayContact').textContent = profile.contact || '-';
+        
+        document.getElementById('editName').value = profile.name || '';
+        document.getElementById('editEmail').value = profile.email || '';
+        document.getElementById('editContact').value = profile.contact || '';
+        
+        if (profile.profile_photo) {
+            document.getElementById('profilePhotoImg').src = profile.profile_photo;
+        }
+        
+        document.getElementById('totalStudents').textContent = stats.total_students || 0;
+        document.getElementById('totalAssessments').textContent = stats.total_assessments || 0;
+        document.getElementById('completedAssessments').textContent = stats.completed_assessments || 0;
+        document.getElementById('averageScore').textContent = (stats.average_score || 0).toFixed(1) + '%';
+        
+        // Populate Faculty Information section
+        document.getElementById('facultyName').textContent = profile.name || '-';
+        document.getElementById('facultyEmail').textContent = profile.email || '-';
+        document.getElementById('facultyDepartment').textContent = profile.department || 'Not specified';
+        document.getElementById('facultyStudentCount').textContent = stats.total_students || 0;
+        
+    } catch (error) {
+        console.error('Error loading profile:', error);
+    }
+}
+
+function setupSectionNavigation() {
+    document.querySelectorAll('.nav-item').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const section = e.target.dataset.section;
+            showSection(section);
+        });
+    });
+}
+
+function showSection(sectionName) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    
+    document.getElementById(sectionName + 'Section').classList.add('active');
+    document.querySelector(`[data-section="${sectionName}"]`).classList.add('active');
+}
+
+function setupProfileEditing() {
+    const toggleBtn = document.getElementById('toggleEditMode');
+    const viewMode = document.getElementById('profileViewMode');
+    const editMode = document.getElementById('profileEditMode');
+    const editForm = document.getElementById('profileEditForm');
+    const cancelBtn = document.getElementById('cancelEditBtn');
+    const changePhotoBtn = document.getElementById('changePhotoBtn');
+    const photoInput = document.getElementById('photoInput');
+    
+    toggleBtn.addEventListener('click', () => {
+        viewMode.style.display = 'none';
+        editMode.style.display = 'block';
+    });
+    
+    cancelBtn.addEventListener('click', () => {
+        viewMode.style.display = 'block';
+        editMode.style.display = 'none';
+    });
+    
+    editForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(editForm);
+        
+        try {
+            const response = await fetch('/api/faculty-info', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    contact: formData.get('contact')
+                })
+            });
+            
+            if (response.ok) {
+                alert('Profile updated successfully!');
+                viewMode.style.display = 'block';
+                editMode.style.display = 'none';
+                await loadFacultyProfile();
+            } else {
+                alert('Failed to update profile');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error updating profile');
+        }
+    });
+    
+    changePhotoBtn.addEventListener('click', () => photoInput.click());
+    
+    photoInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+            const response = await fetch('/upload-profile-photo', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('profilePhotoImg').src = data.url;
+                alert('Photo updated successfully!');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error uploading photo');
+        }
+    });
+}
+
+function setupPasswordChange() {
+    const changeBtn = document.getElementById('changePasswordBtn');
+    const cancelBtn = document.getElementById('cancelPasswordBtn');
+    const viewMode = document.getElementById('profileViewMode');
+    const changeMode = document.getElementById('changePasswordMode');
+    const changeForm = document.getElementById('changePasswordForm');
+    const message = document.getElementById('passwordMessage');
+    
+    changeBtn.addEventListener('click', () => {
+        viewMode.style.display = 'none';
+        changeMode.style.display = 'block';
+    });
+    
+    cancelBtn.addEventListener('click', () => {
+        viewMode.style.display = 'block';
+        changeMode.style.display = 'none';
+        changeForm.reset();
+        message.style.display = 'none';
+    });
+    
+    changeForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const current = document.getElementById('currentPassword').value;
+        const newPass = document.getElementById('newPassword').value;
+        const confirm = document.getElementById('confirmPassword').value;
+        
+        if (newPass !== confirm) {
+            message.textContent = 'Passwords do not match!';
+            message.className = 'message error';
+            message.style.display = 'block';
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/update-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    current_password: current,
+                    new_password: newPass
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                message.textContent = 'Password changed successfully!';
+                message.className = 'message success';
+                message.style.display = 'block';
+                setTimeout(() => {
+                    viewMode.style.display = 'block';
+                    changeMode.style.display = 'none';
+                    changeForm.reset();
+                    message.style.display = 'none';
+                }, 2000);
+            } else {
+                message.textContent = data.error || 'Failed to change password';
+                message.className = 'message error';
+                message.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            message.textContent = 'Error changing password';
+            message.className = 'message error';
+            message.style.display = 'block';
+        }
+    });
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Neurobloom{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <button class="navbar-hamburger" id="hamburger">☰</button>
+        <div class="nav-brand">Neurobloom</div>
+        <ul class="nav-links" id="navLinks">
+            {% if session.get('role') == 'student' %}
+                <li><a href="/student-dashboard">Dashboard</a></li>
+                <li><a href="/student-profile">Profile</a></li>
+                <li><a href="/assessments">Assessments</a></li>
+                <li><a href="/support">Support</a></li>
+            {% elif session.get('role') == 'faculty' %}
+                <li><a href="/faculty-dashboard">Dashboard</a></li>
+                <li><a href="/faculty">Faculty Page</a></li>
+                <li><a href="/support">Support</a></li>
+            {% else %}
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/support">Support</a></li>
+            {% endif %}
+            {% if session.get('user_id') %}
+                <li><a href="/logout" class="btn-logout">Logout</a></li>
+            {% else %}
+                <li><a href="/login" class="btn-login">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <style>
+        body {
+            padding-top: 70px;
+        }
+    </style>
+
+    {% block content %}{% endblock %}
+    
+    <!-- Global Message Container -->
+    <div id="globalMessage" class="global-message" style="display: none;"></div>
+    
+    <script>
+        // Hamburger menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        
+        if (hamburger) {
+            hamburger.addEventListener('click', function() {
+                navLinks.classList.toggle('nav-active');
+            });
+            
+            // Close menu when a link is clicked
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function() {
+                    navLinks.classList.remove('nav-active');
+                });
+            });
+        }
+
+        // Global error handling for fetch requests
+        window.addEventListener('error', function(event) {
+            console.error('Global error:', event.error);
+        });
+    </script>
+</body>
+</html>

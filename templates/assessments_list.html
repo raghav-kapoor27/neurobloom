@@ -1,0 +1,982 @@
+{% extends "base.html" %}
+
+{% block title %}Assessments - Neurobloom{% endblock %}
+
+{% block extra_css %}
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
+    min-height: 100vh !important;
+}
+
+.container {
+    background: transparent !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+.assessments-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    padding-top: 120px;
+    background: transparent;
+    min-height: 100vh;
+}
+
+/* Back Button */
+.back-button-wrapper {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+    animation: slideDown 0.8s ease-out;
+}
+
+.btn-back-dashboard {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    white-space: nowrap;
+}
+
+.btn-back-dashboard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+}
+
+.btn-back-dashboard:active {
+    transform: translateY(0);
+}
+
+.btn-profile-link {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+    color: #667eea;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-profile-link:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+    border-color: rgba(102, 126, 234, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-profile-link:active {
+    transform: translateY(0);
+}
+
+/* Header Styling */
+.assessments-header {
+    margin-bottom: 50px;
+    text-align: center;
+    animation: slideDown 0.8s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.assessments-header h1 {
+    margin: 0 0 20px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 3.5em;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.assessments-header p {
+    color: #b0b0c0;
+    margin: 0;
+    font-size: 1.15em;
+    font-weight: 300;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Filter Section */
+.filter-section {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 45px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filter-btn {
+    padding: 12px 28px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-size: 14px;
+    font-weight: 600;
+    color: #b0b0c0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filter-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+    border-color: rgba(102, 126, 234, 0.5);
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.filter-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+}
+
+/* Grid Layout */
+.assessments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 35px;
+    margin-top: 40px;
+    animation: gridLoad 0.8s ease-out;
+}
+
+@keyframes gridLoad {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Assessment Card */
+.assessment-card {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.547) 0%, rgba(13, 29, 95, 0.766) 100%);
+    border-radius: 20px;
+    padding: 35px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.assessment-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: height 0.5s ease;
+}
+
+.assessment-card.dyslexia::before {
+    background: linear-gradient(90deg, #FF6B6B 0%, #FF5252 100%);
+}
+
+.assessment-card.dyscalculia::before {
+    background: linear-gradient(90deg, #4ECDC4 0%, #45B7AA 100%);
+}
+
+.assessment-card.dysgraphia::before {
+    background: linear-gradient(90deg, #95E1D3 0%, #7ECDC8 100%);
+}
+
+.assessment-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 30px 60px rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.3);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+.assessment-card:hover::before {
+    height: 8px;
+}
+
+/* Icon */
+.assessment-icon {
+    font-size: 56px;
+    margin-bottom: 20px;
+    display: inline-block;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: drop-shadow(0 8px 16px rgba(102, 126, 234, 0.2));
+}
+
+.assessment-card:hover .assessment-icon {
+    transform: scale(1.25) rotate(-10deg);
+    filter: drop-shadow(0 12px 25px rgba(102, 126, 234, 0.4));
+}
+
+/* Title */
+.assessment-card h2 {
+    margin: 0 0 15px 0;
+    color: #f5f5f5;
+    font-size: 24px;
+    font-weight: 700;
+    transition: all 0.4s ease;
+}
+
+.assessment-card:hover h2 {
+    color: #667eea;
+    text-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+}
+
+/* Description */
+.assessment-description {
+    color: #b0b0c0;
+    font-size: 14px;
+    margin: 0 0 22px 0;
+    line-height: 1.7;
+}
+
+/* Meta Info */
+.assessment-meta {
+    display: flex;
+    gap: 25px;
+    font-size: 13px;
+    color: #8888a0;
+    margin-bottom: 22px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Progress Info */
+.progress-info {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.05) 100%);
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 22px;
+    font-size: 13px;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.progress-bar {
+    height: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 10px 0;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    width: 0;
+    transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-radius: 5px;
+    box-shadow: 0 0 12px rgba(102, 126, 234, 0.6);
+}
+
+.attempt-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.1) 100%);
+    color: #a0d8ff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.progress-info strong {
+    color: #e0e0ff;
+    font-weight: 700;
+}
+
+/* Action Buttons */
+.assessment-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-start,
+.btn-view {
+    flex: 1;
+    padding: 14px 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-start {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-start:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
+}
+
+.btn-start:active {
+    transform: translateY(-1px);
+}
+
+.btn-view {
+    background: transparent;
+    color: #667eea;
+    border: 2px solid rgba(102, 126, 234, 0.5);
+}
+
+.btn-view:hover {
+    background: rgba(102, 126, 234, 0.15);
+    border-color: #667eea;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+/* No Assessment Message */
+.no-assessment {
+    text-align: center;
+    padding: 80px 40px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    grid-column: 1 / -1;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.no-assessment h2 {
+    color: #8888a0;
+    margin-bottom: 15px;
+    font-size: 28px;
+}
+
+.no-assessment p {
+    color: #6666a0;
+    font-size: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .assessments-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 30px;
+    }
+
+    .assessments-header h1 {
+        font-size: 2.8em;
+    }
+}
+
+@media (max-width: 768px) {
+    .assessments-container {
+        padding: 30px 15px;
+        padding-top: 100px;
+    }
+
+    .assessments-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .assessments-header h1 {
+        font-size: 2.2em;
+    }
+
+    .assessments-header p {
+        font-size: 1em;
+    }
+
+    .assessment-card {
+        padding: 25px;
+    }
+
+    .assessment-icon {
+        font-size: 48px;
+    }
+
+    .assessment-card h2 {
+        font-size: 20px;
+    }
+
+    .assessment-actions {
+        flex-direction: column;
+    }
+
+    .filter-section {
+        gap: 10px;
+    }
+
+    .filter-btn {
+        padding: 10px 20px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .assessments-container {
+        padding: 20px 12px;
+        padding-top: 90px;
+    }
+
+    .assessments-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .assessments-header h1 {
+        font-size: 1.8em;
+    }
+
+    .assessments-header p {
+        font-size: 0.95em;
+    }
+
+    .assessment-card {
+        padding: 20px;
+    }
+
+    .assessment-icon {
+        font-size: 44px;
+    }
+
+    .assessment-card h2 {
+        font-size: 18px;
+    }
+
+    .assessment-meta {
+        gap: 15px;
+        font-size: 12px;
+    }
+
+    .btn-start,
+    .btn-view {
+        padding: 12px 14px;
+        font-size: 13px;
+    }
+}
+
+/* Attempts Modal Styling */
+.attempts-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.attempts-modal .modal-content {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(147, 112, 219, 0.3);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.attempts-modal h2 {
+    color: #fff;
+    margin-bottom: 30px;
+    font-size: 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.attempts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.attempt-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(147, 112, 219, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.attempt-item:hover {
+    background: rgba(147, 112, 219, 0.1);
+    border-color: rgba(147, 112, 219, 0.6);
+    transform: translateX(5px);
+}
+
+.attempt-number {
+    color: #b0b0c0;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.attempt-score {
+    color: #667eea;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: right;
+}
+
+.attempt-date {
+    color: #b0b0c0;
+    font-size: 12px;
+}
+
+.attempt-time {
+    color: #b0b0c0;
+    font-size: 12px;
+    text-align: right;
+}
+
+.btn-close-modal {
+    width: 100%;
+    padding: 12px 24px;
+    background: rgba(147, 112, 219, 0.2);
+    color: #fff;
+    border: 2px solid rgba(147, 112, 219, 0.5);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-close-modal:hover {
+    background: rgba(147, 112, 219, 0.4);
+    border-color: rgba(147, 112, 219, 0.8);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="assessments-container">
+    <!-- Back Button -->
+    <div class="back-button-wrapper">
+        <button class="btn-back-dashboard" onclick="goToDashboard()">
+            ← Back to Dashboard
+        </button>
+        <a href="/student-profile" class="btn-profile-link" title="View your profile">
+            👤 My Profile
+        </a>
+    </div>
+
+    <!-- Header -->
+    <div class="assessments-header">
+        <h1>📋 Learning Assessments</h1>
+        <p>Complete assessments to help identify learning strengths and areas for improvement</p>
+    </div>
+
+    <!-- Filter Options -->
+    <div class="filter-section">
+        <button class="filter-btn active" data-filter="all">All Assessments</button>
+        <button class="filter-btn" data-filter="dyslexia">Dyslexia</button>
+        <button class="filter-btn" data-filter="dyscalculia">Dyscalculia</button>
+        <button class="filter-btn" data-filter="dysgraphia">Dysgraphia</button>
+    </div>
+
+    <!-- Assessments Grid -->
+    <div class="assessments-grid" id="assessmentsGrid">
+        <!-- Populated by JavaScript -->
+    </div>
+
+    <!-- No Assessments Message -->
+    <div class="no-assessment" id="noAssessment" style="display: none;">
+        <h2>No assessments available</h2>
+        <p>Please check back later or contact your instructor.</p>
+    </div>
+</div>
+
+<script>
+let allAssessments = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadAssessments();
+    setupFilters();
+});
+
+async function loadAssessments() {
+    try {
+        const response = await fetch('/api/assessments/available', {
+            method: 'GET',
+            credentials: 'include'
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            showError(data.error || 'Failed to load assessments');
+            return;
+        }
+
+        allAssessments = data.assessments || [];
+        displayAssessments(allAssessments);
+    } catch (error) {
+        console.error('Error loading assessments:', error);
+        showError('An error occurred while loading assessments');
+    }
+}
+
+function displayAssessments(assessments) {
+    const grid = document.getElementById('assessmentsGrid');
+    const noAssessment = document.getElementById('noAssessment');
+
+    if (assessments.length === 0) {
+        grid.style.display = 'none';
+        noAssessment.style.display = 'block';
+        return;
+    }
+
+    grid.style.display = 'grid';
+    noAssessment.style.display = 'none';
+    grid.innerHTML = '';
+
+    assessments.forEach(assessment => {
+        const card = createAssessmentCard(assessment);
+        grid.appendChild(card);
+    });
+}
+
+function createAssessmentCard(assessment) {
+    const card = document.createElement('div');
+    card.className = `assessment-card ${assessment.disorder_type.toLowerCase()}`;
+    card.dataset.disorder = assessment.disorder_type.toLowerCase();
+
+    const icons = {
+        dyslexia: '📖',
+        dyscalculia: '🔢',
+        dysgraphia: '✏️'
+    };
+
+    const descriptions = {
+        dyslexia: 'Assess reading speed, comprehension, and letter recognition skills',
+        dyscalculia: 'Evaluate mathematical reasoning and numerical understanding',
+        dysgraphia: 'Test writing ability, spelling, and hand coordination'
+    };
+
+    const lastScore = assessment.last_score ? Math.round(assessment.last_score) : null;
+    const lastAttempt = assessment.last_attempt_date ? new Date(assessment.last_attempt_date).toLocaleDateString() : null;
+
+    // Debug logging
+    console.log(`Assessment: ${assessment.name}, Attempts: ${assessment.attempts?.length || 0}, Last Score: ${lastScore}`);
+
+    card.innerHTML = `
+        <div class="assessment-icon">${icons[assessment.disorder_type.toLowerCase()] || '📝'}</div>
+        <h2>${assessment.name}</h2>
+        <p class="assessment-description">${descriptions[assessment.disorder_type.toLowerCase()] || assessment.description}</p>
+
+        ${lastScore !== null ? `
+            <div class="progress-info">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>Last Score: <strong>${lastScore}%</strong></span>
+                    <span class="attempt-badge">${assessment.total_attempts} attempt${assessment.total_attempts !== 1 ? 's' : ''}</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${lastScore}%"></div>
+                </div>
+                <div style="font-size: 11px; color: #999;">Last attempted: ${lastAttempt}</div>
+            </div>
+        ` : ''}
+
+        <div class="assessment-actions">
+            <button class="btn-start" onclick="startAssessment(${assessment.id})">
+                Start Assessment
+            </button>
+            <button class="btn-view" onclick="viewResults(${assessment.id})">
+                📊 View Results
+            </button>
+        </div>
+    `;
+
+    return card;
+}
+
+function setupFilters() {
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            const filter = this.dataset.filter;
+            if (filter === 'all') {
+                displayAssessments(allAssessments);
+            } else {
+                const filtered = allAssessments.filter(a => a.disorder_type.toLowerCase() === filter);
+                displayAssessments(filtered);
+            }
+        });
+    });
+}
+
+async function startAssessment(assessmentId) {
+    try {
+        // First, check if student profile is complete
+        const profileResponse = await fetch('/api/student-info', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+
+        if (!profileResponse.ok) {
+            alert('Could not verify your profile. Please try again.');
+            return;
+        }
+
+        const profileData = await profileResponse.json();
+        
+        // If profile is incomplete, show error and redirect to setup
+        if (!profileData.faculty_id) {
+            alert('Please complete your profile setup first! You will be redirected to your dashboard.');
+            window.location.href = '/student';
+            return;
+        }
+
+        // Profile is complete, proceed to start assessment
+        const response = await fetch('/api/student-assessment/start', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                assessment_id: assessmentId
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error('Error response:', data);
+            alert('Error starting assessment: ' + (data.error || 'Unknown error'));
+            return;
+        }
+
+        // Redirect to assessment page
+        console.log('Redirecting to assessment:', assessmentId, 'Session:', data.student_assessment_id);
+        window.location.href = `/assessment/${assessmentId}`;
+    } catch (error) {
+        console.error('Error starting assessment:', error);
+        alert('An error occurred while starting the assessment');
+    }
+}
+
+function viewResults(assessmentId) {
+    // For Dyslexia Assessment (ID=1), use dedicated results page
+    if (assessmentId === 1) {
+        window.location.href = `/dyslexia-results/${assessmentId}`;
+        return;
+    }
+    
+    // For Dyscalculia Assessment (ID=2), use dedicated results page
+    if (assessmentId === 2) {
+        window.location.href = `/dyscalculia-results/${assessmentId}`;
+        return;
+    }
+    
+    // For Dysgraphia Assessment (ID=3), use dedicated results page
+    if (assessmentId === 3) {
+        window.location.href = `/dysgraphia-results/${assessmentId}`;
+        return;
+    }
+    
+    // For other assessments, fetch latest results from API
+    fetch(`/api/student-assessment-history/${assessmentId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.attempts || data.attempts.length === 0) {
+            alert('No attempts found for this assessment. Please complete the assessment first.');
+            return;
+        }
+        
+        if (data.attempts.length === 1) {
+            // Only one attempt, go directly to results
+            const studentAssessmentId = data.attempts[0].id;
+            window.location.href = `/assessment/results/${studentAssessmentId}`;
+        } else {
+            // Multiple attempts, show a selection modal
+            showAttemptsModalFromData(data.attempts, assessmentId);
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching assessment history:', error);
+        alert('Error loading results. Please try again.');
+    });
+}
+
+function showAttemptsModalFromData(attempts, assessmentId) {
+    // Create a modal to select which attempt to view
+    const modal = document.createElement('div');
+    modal.className = 'attempts-modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h2>Select Attempt to View</h2>
+            <div class="attempts-list">
+                ${attempts.map((attempt, index) => `
+                    <div class="attempt-item" onclick="viewResultsForAttempt(${attempt.id})">
+                        <div class="attempt-number">Attempt ${attempts.length - index}</div>
+                        <div class="attempt-score">${Math.round(attempt.percentage_score || 0)}%</div>
+                        <div class="attempt-date">${new Date(attempt.end_time).toLocaleDateString()}</div>
+                        <div class="attempt-time">${attempt.time_taken_minutes || 0}m</div>
+                    </div>
+                `).join('')}
+            </div>
+            <button class="btn-close-modal" onclick="this.parentElement.parentElement.remove()">Close</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function showAttemptsModal(assessment) {
+    // Create a modal to select which attempt to view
+    const modal = document.createElement('div');
+    modal.className = 'attempts-modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h2>Select Attempt to View</h2>
+            <div class="attempts-list">
+                ${assessment.attempts.map((attempt, index) => `
+                    <div class="attempt-item" onclick="viewResultsForAttempt(${attempt.id})">
+                        <div class="attempt-number">Attempt ${assessment.attempts.length - index}</div>
+                        <div class="attempt-score">${Math.round(attempt.percentage_score)}%</div>
+                        <div class="attempt-date">${new Date(attempt.end_time).toLocaleDateString()}</div>
+                        <div class="attempt-time">${attempt.time_taken_minutes}m</div>
+                    </div>
+                `).join('')}
+            </div>
+            <button class="btn-close-modal" onclick="this.parentElement.parentElement.remove()">Close</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function viewResultsForAttempt(studentAssessmentId) {
+    window.location.href = `/assessment/results/${studentAssessmentId}`;
+}
+
+function showError(message) {
+    const grid = document.getElementById('assessmentsGrid');
+    grid.innerHTML = `
+        <div class="no-assessment" style="grid-column: 1 / -1;">
+            <h2>Error</h2>
+            <p>${message}</p>
+        </div>
+    `;
+}
+
+// Navigate back to dashboard based on user role
+function goToDashboard() {
+    const userRole = '{{ session.get("role") }}';
+    if (userRole === 'student') {
+        window.location.href = '/student-dashboard';
+    } else if (userRole === 'faculty') {
+        window.location.href = '/faculty-dashboard';
+    } else {
+        window.location.href = '/';
+    }
+}
+</script>
+{% endblock %}
